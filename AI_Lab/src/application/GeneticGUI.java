@@ -33,6 +33,10 @@ public class GeneticGUI {
 		
 		
 		
+		
+		
+		
+		
 		geneticPane.getChildren().add(lbl_generation);
 		geneticPane.getChildren().add(lbl_genome);
 		geneticPane.getChildren().add(lbl_fitness);
