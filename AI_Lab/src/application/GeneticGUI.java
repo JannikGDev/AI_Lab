@@ -15,7 +15,6 @@ import javafx.scene.layout.AnchorPane;
 public class GeneticGUI {
 
 	GeneticController controller;
-	GeneticProblem problem;
 	
 	AnchorPane geneticPane;
 	
@@ -30,7 +29,6 @@ public class GeneticGUI {
 	public GeneticGUI() {
 		
 		controller = new GeneticController();
-		problem = new BridgeProblem();
 		
 		geneticPane = new AnchorPane();
 		
@@ -95,11 +93,11 @@ public class GeneticGUI {
 		
 		genomeList.getItems().clear();
 		
-		for(int i = 0; i < Operations.POPULATION_SIZE; i++) {
+		for(int i = 0; i < controller.problem.getGenerationSize(); i++) {
 			
 			String s = Operations.genomeToString(controller.population[i]);
 			
-			s += "  " + problem.calcFitness(controller.population[i]);
+			s += "  " + controller.problem.calcFitness(controller.population[i]);
 			
 			genomeList.getItems().add(s);
 		}

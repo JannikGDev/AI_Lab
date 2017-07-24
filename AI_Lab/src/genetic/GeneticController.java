@@ -1,80 +1,64 @@
 package genetic;
 
-public class GeneticController implements GeneticProblem {
+public class GeneticController {
 
 	
 	public byte[][] population;
+	
+	public GeneticProblem problem;
 	
 	public final static int INITIAL_MUTATION = 10;
 	
 	
 	public GeneticController() {
+		
+		problem = new BridgeProblem();
 
-		population = new byte[Operations.POPULATION_SIZE][Operations.GENOME_SIZE];
+		population = new byte[problem.getGenerationSize()][problem.getGenomeSize()];
 		
 		for(int n = 0; n < INITIAL_MUTATION; n++) {
-			for(int i = 0; i < Operations.POPULATION_SIZE; i++) {
-				population[i] = Operations.mutation(population[i]);
+			for(int i = 0; i < problem.getGenerationSize(); i++) {
+				population[i] = Operations.mutation(population[i],problem.getMutationRate());
 			}
 		}
-		
-		population = Operations.selection(population, this);
-		
 	}
 	
 	public void iterate() {
 		
-		int newSize = (int) (Operations.POPULATION_SIZE*1.05);
+		int newSize = (int) (problem.getGenerationSize()*1.05);
 		
-		byte[][] nextGen = new byte[newSize][Operations.GENOME_SIZE];
+		byte[][] nextGen = new byte[newSize][];
 		
 		
 		for(int i = 0; i < population.length; i++) {
 			nextGen[i] = population[i];
 		}
 		
-		for(int i = population.length; i < newSize; i++) {
+		for(int i = population.length; i < newSize; i += 2) {
 			
-			int a = (int)(Math.random()*population.length - 1);
-			int b = (int)(Math.random()*population.length - 1);
-			
-			
-			//nextGen[i] = Operations.crossover(population[a], population[b]);
-			
-			
+			byte[][] parents = Operations.selection(population, 2, problem);
+			byte[][] children = Operations.crossover(parents[0], parents[1]);
+			nextGen[i] = children[0];
+			nextGen[i+1] = children[1];
+
 		}
 		
 		for(int i = 0; i < newSize; i++) {
-			nextGen[i] = Operations.mutation(nextGen[i]);
+			nextGen[i] = Operations.mutation(nextGen[i],problem.getMutationRate());
 		}
 		
-		population = Operations.selection(nextGen, this);
-		
+		population = Operations.selection(nextGen,problem.getGenerationSize(), problem);
 		
 	}
 	
-	
-	@Override
-	public int calcFitness(byte[] A) {
-		int sum = 0;
+	public byte[][] getOrderedGeneration() {
 		
-		for(int i = 0; i < A.length; i++) {
-			sum += A[i];
-		}
+		// TODO implement
 		
-		return sum;
+		
+		
+		
+		
+		return population;
 	}
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

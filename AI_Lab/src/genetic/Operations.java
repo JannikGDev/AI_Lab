@@ -4,51 +4,47 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 public class Operations {
-
 	
-	
-	public final static float MUTATION_RATE = 0.002f;
-	public final static int GENOME_SIZE = 1;
-	public final static int POPULATION_SIZE = 100;
-	
-	public static byte[] crossover(byte[] A, byte[] B) {
+	public static byte[][] crossover(byte[] A, byte[] B) {
 		
-		int cut = GENOME_SIZE*4;//(int)(Math.random()*GENOME_SIZE*8 + 0.5);
+		int cut = A.length*4;//(int)(Math.random()*GENOME_SIZE*8 + 0.5);
 		
-		byte[] C = new byte[GENOME_SIZE];
+		byte[][] children = new byte[2][A.length];
 		
-		for(int i = 0; i < GENOME_SIZE*8; i++) {
-			if(i/8 < cut/8) {
-				C[i/8] = A[i/8];
+		for(int i = 0; i <  A.length; i++) {
+			if(i < cut/8) {
+				children[0][i] = A[i];
+				children[1][i] = B[i];
+				i += 8;
 			}
-			else if(i/8 == cut/8) {
+			else if(i == cut/8) {
+				byte mask = 0b1111111;
 				
-				byte mask = 1;
+
+				mask = (byte) (mask << (cut % 8));
 				
-				for(int x = 0; x < i % 8; x++) {
-					mask *= 2;
-				}
 				
-				if((A[i/8] & mask) > 0) {
-					C[i/8] |= mask;
-				}
-				else {
-					C[i/8] &= ~mask;
-				}
+				byte nMask = (byte) ~mask;
 				
+				children[0][i] = mask;
+				
+				
+				children[0][i] = (byte) ((mask & A[i]) | (nMask & B[i]));
+				children[1][i] = (byte) ((mask & B[i]) | (nMask & A[i]));
 				
 			}
 			else {
-				C[i/8] = B[i/8];
+				children[0][i] = B[i];
+				children[1][i] = A[i];
 			}
 		}
 		
-		return A;
+		return children;
 	}
 	
-	public static byte[] mutation(byte[] A) {
+	public static byte[] mutation(byte[] A, float mutationRate) {
 		
-		for(int i = 0; i < GENOME_SIZE*8; i++) {
+		for(int i = 0; i < A.length*8; i++) {
 			byte mask = 1;
 			
 			for(int x = 0; x < i % 8; x++) {
@@ -56,7 +52,7 @@ public class Operations {
 			}
 			
 			
-			if(Math.random() <= MUTATION_RATE) {
+			if(Math.random() <= mutationRate) {
 				
 				if((A[i/8] & mask) > 0) {
 					A[i/8] &= ~mask;
@@ -71,45 +67,62 @@ public class Operations {
 		return A;
 	}
 	
+	public static int[] getFitness(byte[][] A, GeneticProblem environment) {
+		
+		int[] fitness = new int[A.length];
+		
+		for(int i = 0; i < A.length; i++) {
+			fitness[i] = environment.calcFitness(A[i]);
+		}
+		return fitness;
+	}
 	
-	public static byte[][] selection(byte[][] A, GeneticProblem environment) {
 	
+	public static byte[][] selection(byte[][] A,int amount, GeneticProblem environment) {
 	
+		int[] selection = new int[amount];
+		
 		int[] fitness = new int[A.length];
 		
 		for(int i = 0; i < A.length; i++) {
 			fitness[i] = environment.calcFitness(A[i]);
 		}
 		
+		long fitnessSum = 0;
+		for(int i = 0; i < fitness.length; i++) {
+			
+			fitnessSum += fitness[i];
+			
+		}
 		
-		PriorityQueue<Integer> list = new PriorityQueue<Integer>(new Comparator<Integer>() {
-	
-			@Override
-			public int compare(Integer o1, Integer o2) {
+		for(int i = 0; i < amount; i++) {
+			
+			long select = (long) (Math.random()*fitnessSum);
+			
+			
+			for(int n = 0; n < A.length; n++) {
 				
-				if(fitness[o1] > fitness[o2]) {
-					return -1;
-				}
-				else if(fitness[o1] == fitness[o2]) {
-					return 0;
-				}
-				else {
-					return 1;
+				
+				select -= fitness[n];
+				
+				if(select <= 0 || n == A.length - 1) {
+					fitnessSum -= fitness[n];
+					fitness[n] = 0;
+					selection[i] = n;
+					break;
 				}
 			}
+		}
+		
+		
+		byte[][] selected = new byte[amount][];
+		
+		for(int i = 0; i < amount; i++) {
 			
-		});
-		
-		for(int i = 0; i <  A.length; i++) {
-			list.add(i);
+			selected[i] = A[selection[i]];
+			
 		}
 		
-		byte[][] selected = new byte[POPULATION_SIZE][];
-		
-		for(int i = 0; i < POPULATION_SIZE; i++) {
-			selected [i] = A[list.poll()];
-		}
-	
 		return selected;
 	}
 	
@@ -122,11 +135,5 @@ public class Operations {
 		
 		return s;
 	}
-	
-	
-	
-	
-	
-	
 	
 }
