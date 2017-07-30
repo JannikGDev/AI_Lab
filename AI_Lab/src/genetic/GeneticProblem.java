@@ -1,5 +1,7 @@
 package genetic;
 
+import javafx.scene.canvas.GraphicsContext;
+
 public interface GeneticProblem {
 
 	
@@ -8,6 +10,6 @@ public interface GeneticProblem {
 	public float getMutationRate();
 	public int getGenomeSize();
 	public int getGenerationSize();
-	
+	public void drawSolution(byte[] A, GraphicsContext context);
 	
 }

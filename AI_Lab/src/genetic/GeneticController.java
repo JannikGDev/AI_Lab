@@ -3,6 +3,9 @@ package genetic;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
+import genetic.problems.MazeProblem;
+import genetic.problems.NumberOfOnes;
+
 public class GeneticController {
 
 	
@@ -11,11 +14,12 @@ public class GeneticController {
 	public GeneticProblem problem;
 	
 	public final static int INITIAL_MUTATION = 10;
+	public final static float CHILD_FACTOR = 2f;
 	
 	
 	public GeneticController() {
 		
-		problem = new BridgeProblem();
+		problem = new MazeProblem(12);
 
 		population = new byte[problem.getGenerationSize()][problem.getGenomeSize()];
 		
@@ -28,7 +32,7 @@ public class GeneticController {
 	
 	public void iterate() {
 		
-		int newSize = (int) (problem.getGenerationSize()*1.5);
+		int newSize = (int) (problem.getGenerationSize()*CHILD_FACTOR);
 		
 		byte[][] nextGen = new byte[newSize][];
 		
@@ -40,6 +44,9 @@ public class GeneticController {
 		for(int i = population.length; i < newSize; i += 2) {
 			
 			byte[][] parents = Operations.selection(population, 2, problem);
+			while(parents[0].equals(parents[1])) {
+				parents = Operations.selection(population, 2, problem);
+			}
 			byte[][] children = Operations.crossover(parents[0], parents[1]);
 			nextGen[i] = children[0];
 			if(i < newSize - 1)nextGen[i+1] = children[1];

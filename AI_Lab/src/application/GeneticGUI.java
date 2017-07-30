@@ -1,9 +1,9 @@
 package application;
 
-import genetic.BridgeProblem;
 import genetic.GeneticController;
 import genetic.GeneticProblem;
 import genetic.Operations;
+import genetic.problems.NumberOfOnes;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -61,8 +61,12 @@ public class GeneticGUI {
 				if(newValue != null) {
 					lbl_genome.setText("Genome: " + newValue.split(" ")[0]);
 					lbl_fitness.setText("Fitness: " + newValue.split(" ")[2]);
+					
+					int index = genomeList.getSelectionModel().getSelectedIndex();
+					
+					controller.problem.drawSolution(controller.getOrderedGeneration()[index], cnv_visu.getGraphicsContext2D());
 				}
-			
+				
 				
 				
 			}
@@ -88,7 +92,10 @@ public class GeneticGUI {
 
 			@Override
 			public void handle(ActionEvent arg0) {
-				controller.iterate();
+				for(int i = 0; i < 100; i++) {
+					controller.iterate();
+				}
+				
 				fillList();
 			}
 			
@@ -121,7 +128,7 @@ public class GeneticGUI {
 		
 		for(int i = 0; i < controller.problem.getGenerationSize(); i++) {
 			
-			String s = Operations.genomeToString(genomes[i]);
+			String s = Operations.genomeToHexString(genomes[i]);
 			
 			s += "  " + controller.problem.calcFitness(genomes[i]);
 			

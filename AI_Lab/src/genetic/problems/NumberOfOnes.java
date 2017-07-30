@@ -1,6 +1,10 @@
-package genetic;
+package genetic.problems;
 
-public class BridgeProblem implements GeneticProblem {
+import genetic.GeneticProblem;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+
+public class NumberOfOnes implements GeneticProblem {
 
 	public final float MUTATION_RATE = 0.02f;
 	public final int GENOME_SIZE = 4;
@@ -37,6 +41,22 @@ public class BridgeProblem implements GeneticProblem {
 	@Override
 	public int getGenerationSize() {
 		return POPULATION_SIZE;
+	}
+
+
+	@Override
+	public void drawSolution(byte[] A, GraphicsContext context) {
+		
+		double width = context.getCanvas().getWidth();
+		double height = context.getCanvas().getHeight();
+		
+		context.setFill(Color.WHITE);
+		context.fillRect(1,1,width-2,height-2);
+		
+		int fitness = calcFitness(A);
+		
+		context.strokeRect(5, 5, fitness, fitness);
+		
 	}
 
 }

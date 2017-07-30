@@ -4,7 +4,7 @@ public class Operations {
 	
 	public static byte[][] crossover(byte[] A, byte[] B) {
 		
-		int cut = A.length*4;//(int)(Math.random()*GENOME_SIZE*8 + 0.5);
+		int cut = (int)(Math.random()*A.length*8 + 0.5);
 		
 		byte[][] children = new byte[2][A.length];
 		
@@ -135,11 +135,21 @@ public class Operations {
 		return selected;
 	}
 	
-	public static String genomeToString(byte[] A) {
+	public static String genomeToBinaryString(byte[] A) {
 		String s = "";
 		
 		for(int i = 0; i < A.length; i++) {
 			s += String.format("%8s", Integer.toBinaryString((A[i] + 256) % 256)).replace(' ', '0');
+		}
+		
+		return s;
+	}
+	
+	public static String genomeToHexString(byte[] A) {
+		String s = "";
+		
+		for(int i = 0; i < A.length; i++) {
+			s +=  String.format("%2s", Integer.toHexString((A[i] + 256) % 256)).replace(' ', '0');
 		}
 		
 		return s;
