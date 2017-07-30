@@ -4,13 +4,17 @@ import genetic.BridgeProblem;
 import genetic.GeneticController;
 import genetic.GeneticProblem;
 import genetic.Operations;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 
 public class GeneticGUI {
 
@@ -23,6 +27,7 @@ public class GeneticGUI {
 	Label lbl_fitness;
 	Button btn_reset;
 	Button btn_cycle;
+	Canvas cnv_visu;
 	ListView<String> genomeList = new ListView<String>();
 	
 	
@@ -48,6 +53,20 @@ public class GeneticGUI {
 		genomeList.setPrefSize(200, 300);
 		AnchorPane.setLeftAnchor(genomeList, 600.0);
 		AnchorPane.setTopAnchor(genomeList, 10.0);
+		genomeList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				
+				if(newValue != null) {
+					lbl_genome.setText("Genome: " + newValue.split(" ")[0]);
+					lbl_fitness.setText("Fitness: " + newValue.split(" ")[2]);
+				}
+			
+				
+				
+			}
+		});
 		
 		btn_reset = new Button("Reset");
 		AnchorPane.setLeftAnchor(btn_reset, 600.0);
@@ -75,7 +94,11 @@ public class GeneticGUI {
 			
 		});
 		
-		
+		cnv_visu = new Canvas(200,200);
+		AnchorPane.setLeftAnchor(cnv_visu, 5.0);
+		AnchorPane.setTopAnchor(cnv_visu, 425.0);
+		cnv_visu.getGraphicsContext2D().setFill(Color.BLACK);
+		cnv_visu.getGraphicsContext2D().fillRect(0, 0, 200, 200);
 		
 		
 		geneticPane.getChildren().add(lbl_generation);
@@ -84,6 +107,7 @@ public class GeneticGUI {
 		geneticPane.getChildren().add(genomeList);
 		geneticPane.getChildren().add(btn_reset);
 		geneticPane.getChildren().add(btn_cycle);
+		geneticPane.getChildren().add(cnv_visu);
 		
 		fillList();
 	}
@@ -91,13 +115,15 @@ public class GeneticGUI {
 	
 	public void fillList() {
 		
+		byte[][] genomes = controller.getOrderedGeneration();
+		
 		genomeList.getItems().clear();
 		
 		for(int i = 0; i < controller.problem.getGenerationSize(); i++) {
 			
-			String s = Operations.genomeToString(controller.population[i]);
+			String s = Operations.genomeToString(genomes[i]);
 			
-			s += "  " + controller.problem.calcFitness(controller.population[i]);
+			s += "  " + controller.problem.calcFitness(genomes[i]);
 			
 			genomeList.getItems().add(s);
 		}

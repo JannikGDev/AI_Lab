@@ -1,8 +1,5 @@
 package genetic;
 
-import java.util.Comparator;
-import java.util.PriorityQueue;
-
 public class Operations {
 	
 	public static byte[][] crossover(byte[] A, byte[] B) {
@@ -15,7 +12,6 @@ public class Operations {
 			if(i < cut/8) {
 				children[0][i] = A[i];
 				children[1][i] = B[i];
-				i += 8;
 			}
 			else if(i == cut/8) {
 				byte mask = 0b1111111;
@@ -84,9 +80,18 @@ public class Operations {
 		
 		int[] fitness = new int[A.length];
 		
+		int max = 0;
+		int best = 0;
+		
 		for(int i = 0; i < A.length; i++) {
 			fitness[i] = environment.calcFitness(A[i]);
+			if(fitness[i] > max) {
+				best = i;
+				max = fitness[i];
+			}
 		}
+		
+		fitness[best] = 0;
 		
 		long fitnessSum = 0;
 		for(int i = 0; i < fitness.length; i++) {
@@ -94,6 +99,7 @@ public class Operations {
 			fitnessSum += fitness[i];
 			
 		}
+		
 		
 		for(int i = 0; i < amount; i++) {
 			
@@ -117,7 +123,10 @@ public class Operations {
 		
 		byte[][] selected = new byte[amount][];
 		
-		for(int i = 0; i < amount; i++) {
+		//Strongest always survives
+		selected[0] = A[best];
+		
+		for(int i = 1; i < amount; i++) {
 			
 			selected[i] = A[selection[i]];
 			

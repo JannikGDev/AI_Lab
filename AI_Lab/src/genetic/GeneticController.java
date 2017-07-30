@@ -1,5 +1,8 @@
 package genetic;
 
+import java.util.Comparator;
+import java.util.PriorityQueue;
+
 public class GeneticController {
 
 	
@@ -25,7 +28,7 @@ public class GeneticController {
 	
 	public void iterate() {
 		
-		int newSize = (int) (problem.getGenerationSize()*1.05);
+		int newSize = (int) (problem.getGenerationSize()*1.5);
 		
 		byte[][] nextGen = new byte[newSize][];
 		
@@ -39,7 +42,7 @@ public class GeneticController {
 			byte[][] parents = Operations.selection(population, 2, problem);
 			byte[][] children = Operations.crossover(parents[0], parents[1]);
 			nextGen[i] = children[0];
-			nextGen[i+1] = children[1];
+			if(i < newSize - 1)nextGen[i+1] = children[1];
 
 		}
 		
@@ -53,12 +56,36 @@ public class GeneticController {
 	
 	public byte[][] getOrderedGeneration() {
 		
-		// TODO implement
+		int[] fitness = Operations.getFitness(population, problem);
+		
+		PriorityQueue<Integer> pq = new PriorityQueue<Integer>(new Comparator<Integer>() {
+
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				if(fitness[o1] < fitness[o2]) {
+					return 1;
+				}
+				else if(fitness[o1] > fitness[o2]) {
+					
+					return -1;
+				}
+				else {
+					return 0;
+				}
+			}	
+		});
+		
+		for(int i = 0; i < fitness.length;i++) {
+			pq.add(i);
+		}
 		
 		
+		byte[][] orderedPopulation = new byte[population.length][];
 		
+		for(int i = 0; i < orderedPopulation.length;i++) {
+			orderedPopulation[i] = population[pq.poll()];
+		}
 		
-		
-		return population;
+		return orderedPopulation;
 	}
 }
