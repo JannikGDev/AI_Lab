@@ -3,7 +3,6 @@ package application;
 import genetic.GeneticController;
 import genetic.GeneticProblem;
 import genetic.Operations;
-import genetic.problems.NumberOfOnes;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;

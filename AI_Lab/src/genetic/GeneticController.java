@@ -3,8 +3,6 @@ package genetic;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
-import genetic.problems.MazeProblem;
-import genetic.problems.NumberOfOnes;
 
 public class GeneticController {
 
@@ -19,7 +17,7 @@ public class GeneticController {
 	
 	public GeneticController() {
 		
-		problem = new MazeProblem(12);
+		problem = new MazeProblem();
 
 		population = new byte[problem.getGenerationSize()][problem.getGenomeSize()];
 		
